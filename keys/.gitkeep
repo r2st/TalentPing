@@ -1,0 +1,6 @@
+# This directory holds secrets (OAuth client secrets, tokens, service-account keys).
+# It is gitignored. Only this .gitkeep placeholder is tracked.
+#
+# Expected files (provide your own, never commit real values):
+#   client_secret.json   - Google Cloud OAuth 2.0 Desktop-App client secrets
+#   token.json           - Per-user Gmail OAuth token (generated at runtime)

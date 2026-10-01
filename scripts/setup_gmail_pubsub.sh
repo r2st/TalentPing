@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+#
+# Provision Gmail push notifications for TalentPing.
+#
+# Gmail's users.watch publishes mailbox changes to a Cloud Pub/Sub topic, and a
+# push subscription POSTs them to our webhook. Three things have to exist and
+# agree, and getting any one of them wrong fails *silently* — Google simply
+# stops publishing and the product falls back to polling with no error anywhere:
+#
+#   1. a topic,
+#   2. a publisher grant on it for Gmail's own service account,
+#   3. a push subscription pointing at /api/v1/gmail/webhook with our token.
+#
+# Every step here is idempotent. Re-running against existing resources updates
+# them rather than failing, because the one thing worse than no push is a
+# half-provisioned topic nobody wants to touch.
+#
+# The webhook is necessarily unauthenticated (Pub/Sub carries no user session),
+# so the shared token in the push endpoint's query string is the only gate. It
+# is generated here if absent and written to keys/, never to the repo.
+#
+# Usage:
+#   ./scripts/setup_gmail_pubsub.sh                 # provision + print env lines
+#   ./scripts/setup_gmail_pubsub.sh --dry-run       # show what would run
+#
+set -euo pipefail
+
+PROJECT="${GMAIL_PUBSUB_PROJECT:-metal-cascade-500017-k3}"
+TOPIC="${GMAIL_PUBSUB_TOPIC_NAME:-talentping-gmail}"
+SUBSCRIPTION="${GMAIL_PUBSUB_SUBSCRIPTION:-talentping-gmail-push}"
+WEBHOOK_BASE="${TALENTPING_WEBHOOK_BASE:-https://job.doaide.com}"
+
+# Gmail publishes as this fixed, Google-owned service account. It is the same
+# for every project — it is Gmail itself, not something we create.
+GMAIL_SERVICE_ACCOUNT="gmail-api-push@system.gserviceaccount.com"
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+KEYS_DIR="${REPO_ROOT}/keys"
+TOKEN_FILE="${KEYS_DIR}/gmail_pubsub_token.txt"
+
+DRY_RUN=0
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
+
+run() {
+  if [[ $DRY_RUN -eq 1 ]]; then
+    printf '  would run: %s\n' "$*"
+  else
+    "$@"
+  fi
+}
+
+say() { printf '\n\033[1m%s\033[0m\n' "$*"; }
+
+command -v gcloud >/dev/null 2>&1 || {
+  echo "gcloud is not installed. https://cloud.google.com/sdk/docs/install" >&2
+  exit 1
+}
+
+# --------------------------------------------------------------------------- #
+# The shared webhook token                                                     #
+# --------------------------------------------------------------------------- #
+
+say "1/5  Shared webhook token"
+mkdir -p "$KEYS_DIR"
+if [[ -s "$TOKEN_FILE" ]]; then
+  echo "  reusing ${TOKEN_FILE}"
+else
+  # Rotating this on every run would break the live subscription until the
+  # server was redeployed, so an existing token is always kept.
+  if [[ $DRY_RUN -eq 1 ]]; then
+    echo "  would generate a new token at ${TOKEN_FILE}"
+  else
+    LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 48 > "$TOKEN_FILE"
+    chmod 600 "$TOKEN_FILE"
+    echo "  generated ${TOKEN_FILE}"
+  fi
+fi
+TOKEN="$(cat "$TOKEN_FILE" 2>/dev/null || echo 'DRY-RUN-TOKEN')"
+
+ENDPOINT="${WEBHOOK_BASE}/api/v1/gmail/webhook?token=${TOKEN}"
+TOPIC_PATH="projects/${PROJECT}/topics/${TOPIC}"
+
+# --------------------------------------------------------------------------- #
+# The API, the topic, the grant, the subscription                              #
+# --------------------------------------------------------------------------- #
+
+say "2/5  Pub/Sub API on ${PROJECT}"
+run gcloud services enable pubsub.googleapis.com --project "$PROJECT"
+
+say "3/5  Topic ${TOPIC_PATH}"
+if gcloud pubsub topics describe "$TOPIC" --project "$PROJECT" >/dev/null 2>&1; then
+  echo "  already exists"
+else
+  run gcloud pubsub topics create "$TOPIC" --project "$PROJECT"
+fi
+
+say "4/5  Publisher grant for Gmail"
+# Without this, users.watch() fails with a permission error at registration —
+# which is at least loud. Everything after registration is the silent kind.
+run gcloud pubsub topics add-iam-policy-binding "$TOPIC" \
+  --project "$PROJECT" \
+  --member "serviceAccount:${GMAIL_SERVICE_ACCOUNT}" \
+  --role roles/pubsub.publisher
+
+say "5/5  Push subscription ${SUBSCRIPTION}"
+if gcloud pubsub subscriptions describe "$SUBSCRIPTION" --project "$PROJECT" >/dev/null 2>&1; then
+  echo "  exists — updating the endpoint"
+  run gcloud pubsub subscriptions update "$SUBSCRIPTION" \
+    --project "$PROJECT" \
+    --push-endpoint "$ENDPOINT"
+else
+  run gcloud pubsub subscriptions create "$SUBSCRIPTION" \
+    --project "$PROJECT" \
+    --topic "$TOPIC" \
+    --push-endpoint "$ENDPOINT" \
+    --ack-deadline 20 \
+    --message-retention-duration 1h
+fi
+
+# --------------------------------------------------------------------------- #
+
+cat <<EOF
+
+$(printf '\033[1mDone.\033[0m') Add these to the server environment
+(keys/talentping_production.env), then restart the API and the Celery beat:
+
+  GMAIL_PUBSUB_PROJECT=${PROJECT}
+  GMAIL_PUBSUB_TOPIC=${TOPIC_PATH}
+  GMAIL_PUBSUB_TOKEN=${TOKEN}
+
+Then register a watch per connected mailbox — POST /api/v1/gmail/watch as that
+user, or let the renew-gmail-watches beat task pick them up.
+
+Two things to check afterwards, because both failure modes are silent:
+
+  * GET /api/v1/gmail/status         -> push_healthy should be true
+  * GET /api/v1/recruiter-inbox/stats -> push.covering should become true once
+    the first notification arrives, and scans_from_push should start climbing.
+
+Until push is delivering, the beat sweep covers every mailbox every five
+minutes, so nothing is missed while this is being set up.
+EOF

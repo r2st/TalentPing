@@ -1,0 +1,47 @@
+# ---- Secrets (NEVER commit) ----
+keys/*
+!keys/.gitkeep
+*.pem
+*.key
+client_secret*.json
+token*.json
+credentials*.json
+.env
+.env.*
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# ---- Node / Frontend ----
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# ---- Editors / OS ----
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# ---- Uploads / runtime data ----
+uploads/
+*.db
+*.sqlite3

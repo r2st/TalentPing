@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  TalentPing UI — editorial-technical.
+
+  Near-black canvas, hairline borders instead of cards-with-shadows, one amber
+  accent used only for the thing you should look at next. Data is monospace,
+  numerals are serif. Nothing shouts except the signal.
+*/
+
+@layer base {
+  :root {
+    --hairline: rgba(255, 255, 255, 0.07);
+    --hairline-strong: rgba(255, 255, 255, 0.12);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-ink-900 font-sans text-[15px] text-white/80 antialiased;
+    /* A barely-there grain so the flat black has some tooth. */
+    background-image:
+      radial-gradient(
+        ellipse 80% 50% at 50% -10%,
+        rgba(240, 180, 41, 0.06),
+        transparent 70%
+      ),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-signal/25 text-white;
+  }
+
+  /* Slim, unobtrusive scrollbars — the table is dense enough already. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full border-4 border-transparent bg-white/10 bg-clip-padding;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-signal/60 ring-offset-2 ring-offset-ink-900;
+  }
+}
+
+@layer components {
+  /* ---- Surfaces ---- */
+  .panel {
+    @apply rounded-xl border bg-ink-800/80 backdrop-blur-sm;
+    border-color: var(--hairline);
+  }
+  .hairline {
+    border-color: var(--hairline);
+  }
+
+  /* ---- Type ---- */
+  .eyebrow {
+    @apply font-mono text-[10px] uppercase tracking-[0.18em] text-white/35;
+  }
+  .stat-figure {
+    @apply font-display text-5xl leading-none tracking-tightest text-white;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Controls ---- */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-lg px-4
+           py-2.5 text-sm font-medium transition-all duration-150
+           disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply btn bg-signal text-ink-900 hover:bg-signal-soft active:scale-[0.985];
+  }
+  .btn-ghost {
+    @apply btn border bg-transparent text-white/70 hover:border-white/20
+           hover:bg-white/[0.04] hover:text-white active:scale-[0.985];
+    border-color: var(--hairline-strong);
+  }
+  .btn-quiet {
+    @apply btn px-2.5 py-1.5 text-xs text-white/45 hover:bg-white/5 hover:text-white/80;
+  }
+  .btn-danger {
+    @apply btn bg-bad/90 text-ink-900 hover:bg-bad active:scale-[0.985];
+  }
+
+  .input {
+    @apply w-full rounded-lg border bg-ink-900/60 px-3.5 py-2.5 text-sm text-white
+           placeholder:text-white/25 focus:border-signal/50 focus:outline-none
+           focus:ring-0;
+    border-color: var(--hairline-strong);
+  }
+  /* A field the setup wizard pre-filled from the resume. Tinted, not shouted:
+     the point is to show what to review, not to decorate the form. Declared
+     after .input so it wins the border-color it overrides. */
+  .input-suggested {
+    @apply bg-signal/[0.04];
+    border-color: rgba(240, 180, 41, 0.35);
+  }
+  .label {
+    @apply mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-white/35;
+  }
+
+  /* ---- Data ---- */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border bg-white/[0.03] px-2
+           py-1 font-mono text-[11px] text-white/70;
+    border-color: var(--hairline-strong);
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5
+           py-0.5 font-mono text-[10px] uppercase tracking-wider;
+  }
+  .cell {
+    @apply px-4 py-3 align-middle;
+  }
+}
+
+@layer utilities {
+  /* Staggered entrance — set on a container's children via nth-child delays. */
+  .stagger > * {
+    animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.08s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.14s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.2s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.26s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

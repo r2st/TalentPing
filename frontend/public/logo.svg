@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="DoAide AutoApply">
+  <title>DoAide AutoApply</title>
+  <g fill="none" stroke="#f0b429" stroke-linecap="round">
+    <path d="M30.95 37.07A14.8 14.8 0 0 0 30.95 10.93" stroke-width="4"/>
+    <path d="M17.05 10.93A14.8 14.8 0 0 0 17.05 37.07" stroke-width="4"/>
+    <path d="M36.31 39.76A20 20 0 0 0 36.31 8.24" stroke-width="3.5"/>
+    <path d="M11.69 8.24A20 20 0 0 0 11.69 39.76" stroke-width="3.5"/>
+  </g>
+  <path fill="#f0b429" fill-rule="evenodd" d="M24 14.3a9.7 9.7 0 1 1 0 19.4a9.7 9.7 0 1 1 0-19.4Z M24 18.24a2.86 2.86 0 1 1 0 5.72a2.86 2.86 0 1 1 0-5.72Z M19.1 30.5a4.9 4.9 0 0 1 9.8 0Z"/>
+</svg>

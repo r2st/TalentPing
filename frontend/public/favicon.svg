@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="DoAide AutoApply">
+  <title>DoAide AutoApply</title>
+  <rect width="48" height="48" rx="10.5" fill="#0a0a0b"/>
+  <g fill="none" stroke="#f0b429" stroke-linecap="round" stroke-width="5.6">
+    <path d="M32.89 36.70A15.5 15.5 0 0 0 32.89 11.30"/>
+    <path d="M15.11 11.30A15.5 15.5 0 0 0 15.11 36.70"/>
+  </g>
+  <circle cx="24" cy="24" r="8.4" fill="#f0b429"/>
+</svg>
