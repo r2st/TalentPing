@@ -1,11 +1,3 @@
-/**
- * The TalentPing mark: a person at the centre, the ping going out both ways.
- *
- * Colour is `currentColor`, so it takes the amber from whatever wraps it rather
- * than hard-coding the accent — the same mark then works on an inverted surface
- * without a second file. The favicons carry a simplified version of this shape
- * (solid core, one pair of arcs) because the person doesn't survive 16px.
- */
 export default function Logo({ className = "h-6 w-6", title }) {
   return (
     <svg
@@ -16,19 +8,25 @@ export default function Logo({ className = "h-6 w-6", title }) {
       aria-hidden={title ? undefined : "true"}
     >
       {title && <title>{title}</title>}
-      <g fill="none" stroke="currentColor" strokeLinecap="round">
-        <path d="M30.95 37.07A14.8 14.8 0 0 0 30.95 10.93" strokeWidth="4" />
-        <path d="M17.05 10.93A14.8 14.8 0 0 0 17.05 37.07" strokeWidth="4" />
-        <path d="M36.31 39.76A20 20 0 0 0 36.31 8.24" strokeWidth="3.5" />
-        <path d="M11.69 8.24A20 20 0 0 0 11.69 39.76" strokeWidth="3.5" />
+      <g fill="none">
+        <line x1="24" y1="8" x2="24" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="24" cy="2" r="1.8" fill="currentColor" opacity="0.9" />
+        <circle cx="24" cy="2" r="2.8" fill="currentColor" opacity="0.25" />
+        <rect x="14" y="8" width="20" height="14" rx="4" fill="currentColor" />
+        <circle cx="19.5" cy="14" r="2.2" fill="#0A0A0B" />
+        <circle cx="28.5" cy="14" r="2.2" fill="#0A0A0B" />
+        <path d="M20 18.5 Q24 21.5 28 18.5" stroke="#0A0A0B" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+        <rect x="16" y="23" width="16" height="12" rx="3" fill="currentColor" />
+        <rect x="8" y="24" width="7" height="3.5" rx="1.8" fill="currentColor" />
+        <rect x="33" y="24" width="7" height="3.5" rx="1.8" fill="currentColor" />
+        <rect x="19" y="36" width="3.5" height="5" rx="1.5" fill="currentColor" />
+        <rect x="25.5" y="36" width="3.5" height="5" rx="1.5" fill="currentColor" />
+        <g transform="translate(36, 28)">
+          <rect x="-2.5" y="0" width="7" height="5.5" rx="1" fill="#0A0A0B" stroke="currentColor" strokeWidth="0.8" />
+          <path d="M-0.5 0 v-1.2 a1.2 1.2 0 0 1 1.2-1.2 h0.6 a1.2 1.2 0 0 1 1.2 1.2 v1.2" stroke="currentColor" strokeWidth="0.7" fill="none" />
+          <rect x="0" y="2" width="2" height="1" rx="0.3" fill="currentColor" />
+        </g>
       </g>
-      {/* One path, even-odd filled: the disc with the head and shoulders cut
-          out of it, so the person is a hole and not a second colour. */}
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        d="M24 14.3a9.7 9.7 0 1 1 0 19.4a9.7 9.7 0 1 1 0-19.4Z M24 18.24a2.86 2.86 0 1 1 0 5.72a2.86 2.86 0 1 1 0-5.72Z M19.1 30.5a4.9 4.9 0 0 1 9.8 0Z"
-      />
     </svg>
   );
 }

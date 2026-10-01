@@ -1,9 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="DoAide AutoApply">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <title>DoAide AutoApply</title>
-  <rect width="48" height="48" rx="10.5" fill="#0a0a0b"/>
-  <g fill="none" stroke="#f0b429" stroke-linecap="round" stroke-width="5.6">
-    <path d="M32.89 36.70A15.5 15.5 0 0 0 32.89 11.30"/>
-    <path d="M15.11 11.30A15.5 15.5 0 0 0 15.11 36.70"/>
-  </g>
-  <circle cx="24" cy="24" r="8.4" fill="#f0b429"/>
+  <line x1="16" y1="6" x2="16" y2="2" stroke="#F0B429" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="16" cy="1.5" r="1.5" fill="#F0B429"/>
+  <rect x="5" y="6" width="22" height="17" rx="5" fill="#F0B429"/>
+  <ellipse cx="11" cy="13" rx="2.5" ry="3" fill="#0A0A0B"/>
+  <ellipse cx="21" cy="13" rx="2.5" ry="3" fill="#0A0A0B"/>
+  <circle cx="11.5" cy="12.5" r="1" fill="#F7CC5F"/>
+  <circle cx="21.5" cy="12.5" r="1" fill="#F7CC5F"/>
+  <path d="M12 19Q16 22 20 19" stroke="#0A0A0B" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <rect x="1" y="10" width="4" height="5" rx="2" fill="#D4A017"/>
+  <rect x="27" y="10" width="4" height="5" rx="2" fill="#D4A017"/>
 </svg>
