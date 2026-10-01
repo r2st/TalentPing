@@ -5,7 +5,7 @@ import { useAuth } from "./hooks/useAuth";
 import { api } from "./lib/api";
 import Inbox from "./pages/Inbox";
 import Jobs from "./pages/Jobs";
-import Login from "./pages/Login";
+import Landing from "./pages/Landing";
 import Pipeline from "./pages/Pipeline";
 import Setup from "./pages/Setup";
 import Tailor from "./pages/Tailor";
@@ -26,31 +26,30 @@ function Protected({ children }) {
 }
 
 /**
- * Where "/" goes depends on who you are. A new user has nothing to look at on
- * the pipeline — an empty funnel is not a first impression — so they land on
- * setup. Once setup is complete the pipeline is the page worth opening, and
- * being sent back to a wizard you already finished reads as broken.
- *
- * The onboarding read is fast, but this still renders a spinner rather than
- * guessing: flashing the wrong page and then redirecting is worse than a beat
- * of nothing.
+ * Where "/" goes depends on who you are. Unauthenticated visitors see the
+ * landing page with its integrated sign-in form — no redirect needed. A new
+ * user has nothing to look at on the pipeline — an empty funnel is not a first
+ * impression — so they land on setup. Once setup is complete the pipeline is
+ * the page worth opening.
  */
 function Home() {
+  const { user, loading } = useAuth();
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
+    if (!user) return;
     let cancelled = false;
     api
       .onboarding()
-      // A failed read shouldn't strand the user on a spinner. Setup is the
-      // safe destination: it is readable whatever state the account is in.
       .catch(() => ({ complete: false }))
       .then((data) => !cancelled && setStatus(data));
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
+  if (loading) return <Loading />;
+  if (!user) return <Landing />;
   if (!status) return <Loading />;
   return <Navigate to={status.complete ? "/pipeline" : "/setup"} replace />;
 }
@@ -58,7 +57,7 @@ function Home() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Landing />} />
 
       {/* The four destinations in the nav. */}
       <Route
@@ -105,14 +104,7 @@ export default function App() {
         }
       />
 
-      <Route
-        path="/"
-        element={
-          <Protected>
-            <Home />
-          </Protected>
-        }
-      />
+      <Route path="/" element={<Home />} />
 
       {/* Old destinations, folded into the four above. */}
       <Route path="/dashboard" element={<Navigate to="/pipeline" replace />} />

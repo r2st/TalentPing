@@ -147,3 +147,54 @@
     }
   }
 }
+
+/* ---- Landing page animations ---- */
+@keyframes landing-pulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  70%, 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.landing-logo-float {
+  animation: logo-float 4s ease-in-out infinite;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  top: -10%;
+  right: -5%;
+  background: rgba(240, 180, 41, 0.07);
+  animation: orb-float 20s ease-in-out infinite;
+}
+.orb-2 {
+  width: 300px;
+  height: 300px;
+  bottom: 10%;
+  left: -5%;
+  background: rgba(240, 180, 41, 0.04);
+  animation: orb-float 25s ease-in-out infinite reverse;
+}
+.orb-3 {
+  width: 200px;
+  height: 200px;
+  top: 40%;
+  left: 40%;
+  background: rgba(240, 180, 41, 0.03);
+  animation: orb-float 18s ease-in-out infinite 3s;
+}
