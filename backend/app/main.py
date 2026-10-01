@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 
 from app.core.apidocs import enrich
 from app.core.config import settings
@@ -196,11 +198,19 @@ def create_app() -> FastAPI:
     # Public: recipients' mail clients hit these, so no auth dependency.
     app.include_router(tracking.router, prefix=prefix)
 
-    # Tagged like everything else: an operation with no group is the one row
-    # a generated reference has nowhere to put.
+    _static = Path(__file__).resolve().parent / "static"
+
     @app.get("/", tags=["misc"], summary="Service banner")
     def root() -> dict[str, str]:
         return {"app": settings.app_name, "docs": "/docs", "health": f"{prefix}/health"}
+
+    @app.get("/privacy", tags=["misc"], summary="Privacy policy", response_class=HTMLResponse)
+    def privacy_policy() -> HTMLResponse:
+        return HTMLResponse((_static / "privacy.html").read_text())
+
+    @app.get("/terms", tags=["misc"], summary="Terms of service", response_class=HTMLResponse)
+    def terms_of_service() -> HTMLResponse:
+        return HTMLResponse((_static / "terms.html").read_text())
 
     # The published schema is the one the reference is generated from, and the
     # one /docs renders. Overriding the method rather than post-processing a
