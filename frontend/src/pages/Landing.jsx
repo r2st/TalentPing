@@ -408,10 +408,19 @@ export default function Landing() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 pb-6 text-center text-xs text-white/20">
-        <a href="https://doaide.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/40">
-          doaide.com
-        </a>
+      <footer className="relative z-10 border-t border-white/[0.06] px-6 pb-6 pt-5 text-center">
+        <div className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em]">
+          <a href="https://desk.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Desk</a>
+          <a href="https://herald.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Herald</a>
+          <a href="https://409.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">409A</a>
+          <span className="text-signal">AutoApply</span>
+          <a href="https://homenex.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Realty</a>
+        </div>
+        <p className="text-xs text-white/20">
+          © {new Date().getFullYear()}{" "}
+          <a href="https://doaide.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/40">DoAide</a>
+          {" "}· AI tools for small businesses
+        </p>
       </footer>
     </div>
   );
