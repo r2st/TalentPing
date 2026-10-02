@@ -29,7 +29,7 @@ In the [Google Cloud console](https://console.cloud.google.com/):
 4. **Credentials → Create credentials → OAuth client ID**:
    - Application type: **Web application** (not "Desktop app").
    - Authorised redirect URI — must match `GOOGLE_OAUTH_REDIRECT_URI` exactly:
-     - production: `https://talentping.aiknol.com/api/v1/gmail/callback`
+     - production: `https://job.doaide.com/api/v1/gmail/callback`
      - local: `http://localhost:8000/api/v1/gmail/callback`
 
 Copy the client ID and secret.
@@ -51,9 +51,9 @@ reconnect — treat it like a database password.
 ```dotenv
 GOOGLE_CLIENT_ID=...apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=...
-GOOGLE_OAUTH_REDIRECT_URI=https://talentping.aiknol.com/api/v1/gmail/callback
+GOOGLE_OAUTH_REDIRECT_URI=https://job.doaide.com/api/v1/gmail/callback
 TOKEN_ENCRYPTION_KEY=...
-FRONTEND_URL=https://talentping.aiknol.com
+FRONTEND_URL=https://job.doaide.com
 ```
 
 `FRONTEND_URL` is the origin the callback popup posts its result back to. If it

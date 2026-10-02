@@ -59,6 +59,21 @@ class TestState:
         assert "gmail.send" in url and "gmail.readonly" in url
         assert "state=state-token" in url
 
+    def test_authorization_url_uses_the_configured_redirect_uri(self, monkeypatch):
+        monkeypatch.setattr(
+            google_oauth.settings, "google_client_id", "test-client-id"
+        )
+        monkeypatch.setattr(
+            google_oauth.settings, "google_client_secret", "test-secret"
+        )
+        monkeypatch.setattr(
+            google_oauth.settings,
+            "google_oauth_redirect_uri",
+            "https://job.doaide.com/api/v1/gmail/callback",
+        )
+        url = google_oauth.build_authorization_url("s")
+        assert "redirect_uri=https%3A%2F%2Fjob.doaide.com" in url
+
     def test_authorization_url_requires_configuration(self, monkeypatch):
         monkeypatch.setattr(google_oauth.settings, "google_client_id", "")
         with pytest.raises(google_oauth.OAuthConfigError):
@@ -262,3 +277,74 @@ class TestStatusAndDisconnect:
         db_session.commit()
 
         assert auth_client.delete(f"/api/v1/gmail/accounts/{account.id}").status_code == 404
+
+
+class TestCallbackHtml:
+    """The callback page must post back to the configured frontend origin."""
+
+    def test_postmessage_targets_frontend_url(self, monkeypatch):
+        from app.routers.gmail import _callback_html
+
+        monkeypatch.setattr(
+            "app.routers.gmail.settings.frontend_url", "https://job.doaide.com"
+        )
+        html = _callback_html(True, "Connected test@gmail.com.")
+        assert '"https://job.doaide.com"' in html
+
+    def test_fallback_link_targets_frontend_url(self, monkeypatch):
+        from app.routers.gmail import _callback_html
+
+        monkeypatch.setattr(
+            "app.routers.gmail.settings.frontend_url", "https://job.doaide.com"
+        )
+        html = _callback_html(True, "Connected test@gmail.com.")
+        assert "https://job.doaide.com/setup?gmail=connected" in html
+
+    def test_error_fallback_link_carries_the_reason(self, monkeypatch):
+        from app.routers.gmail import _callback_html
+
+        monkeypatch.setattr(
+            "app.routers.gmail.settings.frontend_url", "https://job.doaide.com"
+        )
+        html = _callback_html(False, "Something broke.")
+        assert "https://job.doaide.com/setup?gmail=error" in html
+        assert "Something+broke" in html or "Something%20broke" in html
+
+
+class TestRedirectUriValidation:
+    """The config validator must refuse URIs Google will not register."""
+
+    def test_https_production_uri_is_accepted(self):
+        from app.core.config import Settings
+
+        s = Settings(
+            google_client_id="test.apps.googleusercontent.com",
+            google_client_secret="secret",
+            google_oauth_redirect_uri="https://job.doaide.com/api/v1/gmail/callback",
+            _env_file=None,
+        )
+        assert s.google_oauth_redirect_uri == "https://job.doaide.com/api/v1/gmail/callback"
+
+    def test_http_localhost_is_accepted(self):
+        from app.core.config import Settings
+
+        s = Settings(
+            google_client_id="test.apps.googleusercontent.com",
+            google_client_secret="secret",
+            google_oauth_redirect_uri="http://localhost:8000/api/v1/gmail/callback",
+            _env_file=None,
+        )
+        assert "localhost" in s.google_oauth_redirect_uri
+
+    def test_plain_http_on_a_public_domain_is_refused(self):
+        from pydantic import ValidationError
+
+        from app.core.config import Settings
+
+        with pytest.raises(ValidationError, match="must be https"):
+            Settings(
+                google_client_id="test.apps.googleusercontent.com",
+                google_client_secret="secret",
+                google_oauth_redirect_uri="http://job.doaide.com/api/v1/gmail/callback",
+                _env_file=None,
+            )

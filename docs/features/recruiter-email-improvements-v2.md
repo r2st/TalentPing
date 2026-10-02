@@ -106,7 +106,7 @@ Setup page a line that distinguishes "push is on" from "push is working".
 topic          projects/metal-cascade-500017-k3/topics/talentping-gmail
 publisher      gmail-api-push@system.gserviceaccount.com  (roles/pubsub.publisher)
 subscription   talentping-gmail-push  (push)
-endpoint       https://talentping.aiknol.com/api/v1/gmail/webhook?token=<secret>
+endpoint       https://job.doaide.com/api/v1/gmail/webhook?token=<secret>
 ```
 
 The script generates the shared token if absent, writes it to
