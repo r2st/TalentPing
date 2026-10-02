@@ -16,9 +16,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.patching import reject_nulls
+from app.core.rate_limit import rate_limit
 from app.models.gmail_account import GmailAccount
 from app.models.profile import Profile
 from app.models.resume import Resume
@@ -34,6 +36,12 @@ from app.services.preference_suggester import suggest_preferences
 from app.tasks import job_tasks
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])
+
+_write_limit = rate_limit(
+    lambda: settings.write_rate_limit,
+    lambda: settings.write_rate_window_seconds,
+    scope="profile-write",
+)
 
 # A ceiling, not a product opinion. Every active profile costs a scoring pass per
 # posting and can cost an LLM re-rank call per scan, so an unbounded list is a
@@ -138,7 +146,12 @@ def list_profiles(
     return rows
 
 
-@router.post("", response_model=ProfileOut, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=ProfileOut,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(_write_limit)],
+)
 def create_profile(
     payload: ProfileCreate,
     db: Session = Depends(get_db),
@@ -174,7 +187,10 @@ def create_profile(
 
 
 @router.post(
-    "/from-resume", response_model=ProfileOut, status_code=status.HTTP_201_CREATED
+    "/from-resume",
+    response_model=ProfileOut,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(_write_limit)],
 )
 def create_from_resume(
     payload: ProfileFromResume,
@@ -232,7 +248,11 @@ def get_profile(
     return ProfileOut.from_profile(_get_owned(db, user, profile_id))
 
 
-@router.patch("/{profile_id}", response_model=ProfileOut)
+@router.patch(
+    "/{profile_id}",
+    response_model=ProfileOut,
+    dependencies=[Depends(_write_limit)],
+)
 def patch_profile(
     profile_id: int,
     payload: ProfileUpdate,
@@ -297,7 +317,11 @@ def patch_profile(
     return ProfileOut.from_profile(profile)
 
 
-@router.delete("/{profile_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{profile_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(_write_limit)],
+)
 def delete_profile(
     profile_id: int,
     db: Session = Depends(get_db),

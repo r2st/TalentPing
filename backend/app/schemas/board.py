@@ -27,9 +27,7 @@ class BoardColumn(BaseModel):
 class BoardMoveRequest(BaseModel):
     """Where the card was dropped."""
 
-    stage: str
-    # Optional free text recorded on the history row: "spoke to them at the
-    # meetup". Never shown as the reason for an automatic transition.
+    stage: str = Field(min_length=1, max_length=50)
     note: str | None = Field(default=None, max_length=255)
 
 

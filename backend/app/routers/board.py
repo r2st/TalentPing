@@ -18,8 +18,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.rate_limit import rate_limit
 from app.models.application import Application
 from app.models.status_event import ApplicationStatusEvent
 from app.models.user import User
@@ -32,6 +34,12 @@ from app.schemas.board import (
 from app.services import pipeline_board as board
 
 router = APIRouter(tags=["board"])
+
+_write_limit = rate_limit(
+    lambda: settings.write_rate_limit,
+    lambda: settings.write_rate_window_seconds,
+    scope="board-write",
+)
 
 
 def _application_or_404(db: Session, user: User, application_id: int) -> Application:
@@ -57,7 +65,11 @@ def _event_out(event: ApplicationStatusEvent) -> StatusEventOut:
     )
 
 
-@router.patch("/board/applications/{application_id}", response_model=BoardMoveOut)
+@router.patch(
+    "/board/applications/{application_id}",
+    response_model=BoardMoveOut,
+    dependencies=[Depends(_write_limit)],
+)
 def move_card(
     application_id: int,
     payload: BoardMoveRequest,

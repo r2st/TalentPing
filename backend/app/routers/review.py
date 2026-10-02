@@ -38,6 +38,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.pagination import Page, page_params
+from app.core.rate_limit import rate_limit
 from app.models.application import Application
 from app.models.email import Email, EmailDirection, EmailStatus, ReplyIntent
 from app.models.email_thread import EmailThread
@@ -63,6 +64,12 @@ from app.services import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/review", tags=["review"])
+
+_write_limit = rate_limit(
+    lambda: settings.write_rate_limit,
+    lambda: settings.write_rate_window_seconds,
+    scope="review-write",
+)
 
 
 def _is_reply(db: Session, email: Email) -> bool:
@@ -340,7 +347,11 @@ def _dispatch(db: Session, email_id: int, *, countdown: int = 30) -> None:
         db.rollback()
 
 
-@router.post("/emails/{email_id}/approve", response_model=EmailOut)
+@router.post(
+    "/emails/{email_id}/approve",
+    response_model=EmailOut,
+    dependencies=[Depends(_write_limit)],
+)
 def approve(
     email_id: int,
     db: Session = Depends(get_db),
@@ -366,7 +377,11 @@ def approve(
     return email
 
 
-@router.post("/approve-batch", response_model=BatchApproveResult)
+@router.post(
+    "/approve-batch",
+    response_model=BatchApproveResult,
+    dependencies=[Depends(_write_limit)],
+)
 def approve_batch(
     payload: BatchApproveRequest,
     db: Session = Depends(get_db),
@@ -480,7 +495,11 @@ def _queue_ids(db: Session, user: User, scope: str) -> tuple[list[int], int]:
     return ids, max(0, len(rows) - len(ids))
 
 
-@router.post("/emails/{email_id}/dismiss", status_code=status.HTTP_204_NO_CONTENT)
+@router.post(
+    "/emails/{email_id}/dismiss",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(_write_limit)],
+)
 def dismiss(
     email_id: int,
     db: Session = Depends(get_db),

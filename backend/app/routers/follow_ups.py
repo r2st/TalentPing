@@ -28,8 +28,10 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.rate_limit import rate_limit
 from app.models.user import User
 from app.schemas.follow_up import (
     FollowUpScheduled,
@@ -39,6 +41,12 @@ from app.schemas.follow_up import (
 from app.services import follow_up_suggestions
 
 router = APIRouter(prefix="/follow-ups", tags=["follow-ups"])
+
+_write_limit = rate_limit(
+    lambda: settings.write_rate_limit,
+    lambda: settings.write_rate_window_seconds,
+    scope="follow-up-write",
+)
 
 
 @router.get("/suggestions", response_model=FollowUpSuggestions)
@@ -66,7 +74,11 @@ def suggestions(
     )
 
 
-@router.post("/suggestions/{application_id}/accept", response_model=FollowUpScheduled)
+@router.post(
+    "/suggestions/{application_id}/accept",
+    response_model=FollowUpScheduled,
+    dependencies=[Depends(_write_limit)],
+)
 def accept(
     application_id: int,
     db: Session = Depends(get_db),
@@ -82,7 +94,11 @@ def accept(
     )
 
 
-@router.delete("/suggestions/{application_id}", response_model=FollowUpScheduled)
+@router.delete(
+    "/suggestions/{application_id}",
+    response_model=FollowUpScheduled,
+    dependencies=[Depends(_write_limit)],
+)
 def dismiss(
     application_id: int,
     db: Session = Depends(get_db),

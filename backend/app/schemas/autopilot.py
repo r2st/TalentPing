@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from typing import Annotated
+
 from pydantic import BaseModel, Field, computed_field, field_validator
 
 from app.core.config import settings
@@ -20,9 +22,15 @@ class AutopilotUpdate(BaseModel):
     resume_id: int | None = None
     is_active: bool | None = None
 
-    target_roles: list[str] | None = Field(default=None, max_length=10)
-    target_industries: list[str] | None = Field(default=None, max_length=10)
-    locations: list[str] | None = Field(default=None, max_length=10)
+    target_roles: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=10
+    )
+    target_industries: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=10
+    )
+    locations: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=10
+    )
     remote_only: bool | None = None
     salary_min: int | None = Field(default=None, ge=0)
 
@@ -77,7 +85,9 @@ class AutopilotUpdate(BaseModel):
     outreach_sign_off: str | None = Field(default=None, max_length=60)
     # Short phrases the user wants worked in — capped in both directions so a
     # settings box can't quietly become the whole prompt.
-    outreach_highlights: list[str] | None = Field(default=None, max_length=5)
+    outreach_highlights: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=5
+    )
     outreach_custom_instructions: str | None = Field(default=None, max_length=500)
 
 

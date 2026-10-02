@@ -25,10 +25,18 @@ _MAX_EXCLUDED = 50
 
 
 class ProfileBase(BaseModel):
-    target_roles: list[str] = Field(default_factory=list, max_length=12)
-    target_industries: list[str] = Field(default_factory=list, max_length=12)
-    skills: list[str] = Field(default_factory=list, max_length=60)
-    location_preferences: list[str] = Field(default_factory=list, max_length=12)
+    target_roles: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=12
+    )
+    target_industries: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=12
+    )
+    skills: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=60
+    )
+    location_preferences: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=12
+    )
     remote_only: bool = False
     salary_min: int | None = Field(default=None, ge=0)
     salary_max: int | None = Field(default=None, ge=0)
@@ -78,10 +86,18 @@ class ProfileUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=120)
     resume_id: int | None = None
     gmail_account_id: int | None = None
-    target_roles: list[str] | None = Field(default=None, max_length=12)
-    target_industries: list[str] | None = Field(default=None, max_length=12)
-    skills: list[str] | None = Field(default=None, max_length=60)
-    location_preferences: list[str] | None = Field(default=None, max_length=12)
+    target_roles: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=12
+    )
+    target_industries: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=12
+    )
+    skills: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=60
+    )
+    location_preferences: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = Field(
+        default=None, max_length=12
+    )
     remote_only: bool | None = None
     salary_min: int | None = Field(default=None, ge=0)
     salary_max: int | None = Field(default=None, ge=0)

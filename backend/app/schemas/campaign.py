@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from typing import Annotated
+
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.models.campaign import CampaignStatus
@@ -18,9 +20,15 @@ class CampaignCreate(BaseModel):
 
     name: str | None = Field(default=None, max_length=255)
     resume_id: int | None = None
-    target_companies: list[str] = Field(default_factory=list, max_length=50)
-    target_industries: list[str] = Field(default_factory=list, max_length=10)
-    target_roles: list[str] = Field(default_factory=list, max_length=10)
+    target_companies: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=50
+    )
+    target_industries: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=10
+    )
+    target_roles: list[Annotated[str, Field(min_length=1, max_length=200)]] = Field(
+        default_factory=list, max_length=10
+    )
     auto_send: bool = True
     # Which connected mailbox this campaign sends from. Omitted means "the usual
     # one" — the matched profile's, else the primary — which is what every

@@ -23,9 +23,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.pagination import MAX_DB_INT, set_page_headers
+from app.core.rate_limit import rate_limit
 from app.models.notification import NOTIFICATION_KINDS
 from app.models.user import User
 from app.schemas.notification import (
@@ -40,6 +42,12 @@ from app.schemas.notification import (
 from app.services import notifications, usage_events
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
+
+_write_limit = rate_limit(
+    lambda: settings.write_rate_limit,
+    lambda: settings.write_rate_window_seconds,
+    scope="notification-write",
+)
 
 
 def _preference_out(pref) -> NotificationPreferenceOut:
@@ -89,7 +97,11 @@ def get_preferences(
     return _preference_out(notifications.get_preference(db, user))
 
 
-@router.put("/preferences", response_model=NotificationPreferenceOut)
+@router.put(
+    "/preferences",
+    response_model=NotificationPreferenceOut,
+    dependencies=[Depends(_write_limit)],
+)
 def update_preferences(
     payload: NotificationPreferenceUpdate,
     db: Session = Depends(get_db),
@@ -123,7 +135,11 @@ def update_preferences(
     return _preference_out(pref)
 
 
-@router.post("/read-all", response_model=MarkAllReadResult)
+@router.post(
+    "/read-all",
+    response_model=MarkAllReadResult,
+    dependencies=[Depends(_write_limit)],
+)
 def read_all(
     db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> MarkAllReadResult:
@@ -142,7 +158,11 @@ def read_one(
     return NotificationOut.model_validate(row)
 
 
-@router.delete("", response_model=DismissAllResult)
+@router.delete(
+    "",
+    response_model=DismissAllResult,
+    dependencies=[Depends(_write_limit)],
+)
 def dismiss_all(
     db: Session = Depends(get_db), user: User = Depends(get_current_user)
 ) -> DismissAllResult:

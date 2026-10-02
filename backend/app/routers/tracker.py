@@ -13,9 +13,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import case, func, select
 from sqlalchemy.orm import Session, selectinload
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.pagination import MAX_DB_INT, Page, page_params
+from app.core.rate_limit import rate_limit
 from app.models.application import (
     ENGAGED_STATUSES,
     INTERVIEWING_STATUSES,
@@ -33,6 +35,12 @@ from app.schemas.tracker import OnboardingStatus, TrackerOut, TrackerRow, Tracke
 from app.services import gmail_accounts, google_oauth
 
 router = APIRouter(tags=["tracker"])
+
+_write_limit = rate_limit(
+    lambda: settings.write_rate_limit,
+    lambda: settings.write_rate_window_seconds,
+    scope="tracker-write",
+)
 
 # "Did the recruiter write back?" and "is a real conversation happening?" come
 # from the model rather than being restated here.
@@ -294,7 +302,11 @@ def get_outreach(
     return application
 
 
-@router.patch("/tracker/emails/{email_id}", response_model=EmailOut)
+@router.patch(
+    "/tracker/emails/{email_id}",
+    response_model=EmailOut,
+    dependencies=[Depends(_write_limit)],
+)
 def edit_email_draft(
     email_id: int,
     payload: EmailUpdate,

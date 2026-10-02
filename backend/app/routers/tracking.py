@@ -28,11 +28,18 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import get_db
+from app.core.rate_limit import ip_rate_limit
 from app.services import email_tracking
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/t", tags=["tracking"])
+
+_tracking_limit = ip_rate_limit(
+    lambda: settings.tracking_rate_limit,
+    lambda: settings.tracking_rate_window_seconds,
+    scope="tracking",
+)
 
 # Mail clients cache aggressively; without this a second read never reports.
 _NO_STORE = {
@@ -50,7 +57,7 @@ def _pixel() -> Response:
     )
 
 
-@router.get("/o/{token}.gif")
+@router.get("/o/{token}.gif", dependencies=[Depends(_tracking_limit)])
 def track_open(
     token: str,
     request: Request,
@@ -78,7 +85,7 @@ def track_open(
     return _pixel()
 
 
-@router.get("/c/{token}")
+@router.get("/c/{token}", dependencies=[Depends(_tracking_limit)])
 def track_click(
     token: str,
     request: Request,

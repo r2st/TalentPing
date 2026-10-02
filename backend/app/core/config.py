@@ -97,6 +97,17 @@ class Settings(BaseSettings):
     # what needs protecting.
     password_change_rate_limit: int = 5
     password_change_rate_window_seconds: int = 3600
+    # Write endpoints (profile/board/notification/follow-up/review mutations).
+    # Per user, generous enough that no real workflow hits it — the purpose is
+    # to cap a runaway client or a stolen token churning writes.
+    write_rate_limit: int = 60
+    write_rate_window_seconds: int = 60
+    # Public tracking endpoints (open pixel + click redirect). Per IP, because
+    # the caller is a mail client with no session. Generous: a single email
+    # with ten tracked links opens them all at once, but a sustained flood of
+    # forged tokens is the abuse this bounds.
+    tracking_rate_limit: int = 120
+    tracking_rate_window_seconds: int = 60
 
     # ---- Security / JWT ----
     # The HMAC key every access token is signed with. The shipped value is a
@@ -993,6 +1004,8 @@ class Settings(BaseSettings):
         "login_rate_limit",
         "register_rate_limit",
         "password_change_rate_limit",
+        "write_rate_limit",
+        "tracking_rate_limit",
     )
     @classmethod
     def _rate_limit_not_negative(cls, v: int, info: ValidationInfo) -> int:
@@ -1012,6 +1025,8 @@ class Settings(BaseSettings):
         "login_rate_window_seconds",
         "register_rate_window_seconds",
         "password_change_rate_window_seconds",
+        "write_rate_window_seconds",
+        "tracking_rate_window_seconds",
     )
     @classmethod
     def _rate_window_is_positive(cls, v: int, info: ValidationInfo) -> int:

@@ -53,7 +53,7 @@ class NotificationPreferenceOut(BaseModel):
 
 class NotificationPreferenceUpdate(BaseModel):
     enabled: bool | None = None
-    muted_kinds: list[str] | None = None
+    muted_kinds: list[str] | None = Field(default=None, max_length=50)
 
     @field_validator("muted_kinds")
     @classmethod
