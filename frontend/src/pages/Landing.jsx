@@ -181,6 +181,85 @@ function TypewriterText({ words, className = "" }) {
   );
 }
 
+/* ---------- feature cards ---------- */
+
+const FEATURES = [
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
+        <path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" strokeLinecap="round" />
+        <path d="M11 8v6M8 11h6" strokeLinecap="round" />
+      </svg>
+    ),
+    title: "Smart Job Matching",
+    desc: "AI scans job boards and finds postings that match your skills, experience, and preferences.",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" strokeLinecap="round" />
+        <rect x="9" y="3" width="6" height="4" rx="1" />
+        <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    title: "Auto-Apply",
+    desc: "Automatically fills out and submits applications on your behalf — even complex multi-step forms.",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <path d="M22 6l-10 7L2 6" strokeLinecap="round" />
+      </svg>
+    ),
+    title: "Email Outreach",
+    desc: "Crafts personalized emails to recruiters and hiring managers, then tracks every reply.",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    title: "Pipeline Tracker",
+    desc: "One dashboard for every application — see status, follow-ups, and responses at a glance.",
+  },
+];
+
+function FeatureCard({ icon, title, desc, delay }) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`group rounded-xl border border-white/[0.06] bg-ink-800/50 p-5 backdrop-blur-sm transition-all duration-700 hover:border-signal/20 hover:bg-ink-800/80 ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-signal/20 bg-signal/10 text-signal transition-colors group-hover:bg-signal/20">
+        {icon}
+      </div>
+      <h3 className="mb-1.5 text-sm font-medium text-white">{title}</h3>
+      <p className="text-xs leading-relaxed text-white/35">{desc}</p>
+    </div>
+  );
+}
+
+/* ---------- how-it-works steps ---------- */
+
 function StepIndicator({ number, text, delay }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -358,8 +437,8 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-14 px-6 pb-16 pt-4 lg:flex-row lg:gap-20 lg:px-20">
+      {/* Hero section */}
+      <section className="relative z-10 flex flex-1 flex-col items-center justify-center gap-14 px-6 pb-8 pt-4 lg:flex-row lg:gap-20 lg:px-20">
         {/* Left: Hero */}
         <div
           className={`flex max-w-lg flex-1 flex-col items-center text-center transition-all duration-700 lg:items-start lg:text-left ${
@@ -373,19 +452,21 @@ export default function Landing() {
           <h1 className="font-display text-4xl leading-[1.05] tracking-tightest text-white md:text-5xl lg:text-[3.5rem]">
             Your AI{" "}
             <TypewriterText
-              words={["recruiter finder", "email writer", "reply tracker", "job hunter"]}
+              words={["job hunter", "form filler", "email writer", "reply tracker"]}
               className="text-signal"
             />
           </h1>
 
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/35">
-            Upload a resume. We handle the rest.
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/40">
+            AI-powered job application automation. Upload your resume and AutoApply
+            finds matching jobs, fills out applications, writes recruiter emails,
+            and tracks every response — on autopilot.
           </p>
 
           <div className="mt-10 space-y-3">
-            <StepIndicator number="1" text="Upload your resume" delay={800} />
-            <StepIndicator number="2" text="We find recruiters and write emails" delay={1100} />
-            <StepIndicator number="3" text="Track replies on autopilot" delay={1400} />
+            <StepIndicator number="1" text="Upload your resume and set preferences" delay={800} />
+            <StepIndicator number="2" text="AI matches jobs and auto-applies for you" delay={1100} />
+            <StepIndicator number="3" text="Track applications and replies in one place" delay={1400} />
           </div>
         </div>
 
@@ -405,7 +486,25 @@ export default function Landing() {
             <AuthForm />
           </div>
         </div>
-      </main>
+      </section>
+
+      {/* Features section */}
+      <section className="relative z-10 px-6 pb-16 pt-8 lg:px-20">
+        <div className="mx-auto max-w-4xl">
+          <p
+            className={`mb-8 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-white/30 transition-all duration-700 delay-500 ${
+              mounted ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            }`}
+          >
+            Everything you need to land your next role
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((f, i) => (
+              <FeatureCard key={f.title} {...f} delay={200 + i * 120} />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/[0.06] px-6 pb-6 pt-5 text-center">
@@ -415,6 +514,11 @@ export default function Landing() {
           <a href="https://409.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">409A</a>
           <span className="text-signal">AutoApply</span>
           <a href="https://homenex.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Realty</a>
+        </div>
+        <div className="mb-2 flex justify-center gap-x-3 text-xs">
+          <a href="/privacy" className="text-white/20 transition-colors hover:text-white/40">Privacy</a>
+          <span className="text-white/10">·</span>
+          <a href="/terms" className="text-white/20 transition-colors hover:text-white/40">Terms</a>
         </div>
         <p className="text-xs text-white/20">
           © {new Date().getFullYear()}{" "}
