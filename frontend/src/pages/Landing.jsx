@@ -122,6 +122,175 @@ function Particles() {
   return <canvas ref={canvasRef} className="landing-particles" />;
 }
 
+/* ---------- pipeline visualization ---------- */
+
+const PIPELINE_STAGES = [
+  {
+    label: "Search",
+    icon: (
+      <>
+        <circle cx="12" cy="11" r="5" stroke="#F0B429" strokeWidth="1.8" fill="none" />
+        <line x1="15.5" y1="14.5" x2="20" y2="19" stroke="#F0B429" strokeWidth="1.8" strokeLinecap="round" />
+      </>
+    ),
+  },
+  {
+    label: "Match",
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="4" stroke="#F0B429" strokeWidth="1.8" fill="none" />
+        <circle cx="12" cy="12" r="1.5" fill="#F0B429" />
+        <line x1="12" y1="4" x2="12" y2="6" stroke="#F0B429" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="12" y1="18" x2="12" y2="20" stroke="#F0B429" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="4" y1="12" x2="6" y2="12" stroke="#F0B429" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="18" y1="12" x2="20" y2="12" stroke="#F0B429" strokeWidth="1.2" strokeLinecap="round" />
+      </>
+    ),
+  },
+  {
+    label: "Apply",
+    icon: (
+      <>
+        <path d="M12 4 L12 16" stroke="#F0B429" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M7 9 L12 4 L17 9" stroke="#F0B429" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1="5" y1="20" x2="19" y2="20" stroke="#F0B429" strokeWidth="1.8" strokeLinecap="round" />
+      </>
+    ),
+  },
+  {
+    label: "Interview",
+    icon: (
+      <>
+        <rect x="4" y="6" width="16" height="14" rx="2" stroke="#F0B429" strokeWidth="1.6" fill="none" />
+        <line x1="4" y1="11" x2="20" y2="11" stroke="#F0B429" strokeWidth="1.2" />
+        <line x1="8" y1="6" x2="8" y2="3" stroke="#F0B429" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="16" y1="6" x2="16" y2="3" stroke="#F0B429" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="10" cy="15.5" r="1.2" fill="#F0B429" />
+        <circle cx="14.5" cy="15.5" r="1.2" fill="#F0B429" />
+      </>
+    ),
+  },
+];
+
+function PipelineViz() {
+  const nodeW = 80;
+  const nodeH = 70;
+  const gap = 44;
+  const totalW = PIPELINE_STAGES.length * nodeW + (PIPELINE_STAGES.length - 1) * gap;
+  const svgH = nodeH + 16;
+
+  return (
+    <div className="landing-pipeline-wrap">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`0 0 ${totalW} ${svgH}`}
+        className="landing-pipeline"
+        aria-label="Pipeline: Search, Match, Apply, Interview"
+        role="img"
+      >
+        <defs>
+          <filter id="pipe-glow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <radialGradient id="dot-grad">
+            <stop offset="0%" stopColor="#F0B429" />
+            <stop offset="100%" stopColor="#F0B429" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {PIPELINE_STAGES.map((stage, i) => {
+          const x = i * (nodeW + gap);
+          const centerY = svgH / 2 - 6;
+
+          return (
+            <g key={stage.label}>
+              {/* connector line + flowing dots */}
+              {i < PIPELINE_STAGES.length - 1 && (
+                <g>
+                  <line
+                    x1={x + nodeW}
+                    y1={centerY}
+                    x2={x + nodeW + gap}
+                    y2={centerY}
+                    stroke="rgba(240,180,41,0.15)"
+                    strokeWidth="2"
+                  />
+                  {[0, 1, 2].map((d) => (
+                    <circle key={d} r="2.5" fill="#F0B429" filter="url(#pipe-glow)">
+                      <animateMotion
+                        dur="1.8s"
+                        repeatCount="indefinite"
+                        begin={`${d * 0.6}s`}
+                        path={`M${x + nodeW},${centerY} L${x + nodeW + gap},${centerY}`}
+                      />
+                      <animate
+                        attributeName="opacity"
+                        values="0;1;1;0"
+                        dur="1.8s"
+                        repeatCount="indefinite"
+                        begin={`${d * 0.6}s`}
+                      />
+                    </circle>
+                  ))}
+                </g>
+              )}
+
+              {/* node card */}
+              <rect
+                x={x}
+                y={centerY - nodeH / 2}
+                width={nodeW}
+                height={nodeH}
+                rx="14"
+                fill="rgba(16,16,18,0.8)"
+                stroke="rgba(240,180,41,0.2)"
+                strokeWidth="1"
+                className="landing-pipeline-node"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+              {/* glow behind node */}
+              <rect
+                x={x + 4}
+                y={centerY - nodeH / 2 + 4}
+                width={nodeW - 8}
+                height={nodeH - 8}
+                rx="10"
+                fill="none"
+                stroke="rgba(240,180,41,0.06)"
+                strokeWidth="8"
+                filter="url(#pipe-glow)"
+              />
+
+              {/* icon */}
+              <g transform={`translate(${x + nodeW / 2 - 12}, ${centerY - 16})`}>
+                {stage.icon}
+              </g>
+
+              {/* label */}
+              <text
+                x={x + nodeW / 2}
+                y={centerY + 28}
+                textAnchor="middle"
+                fill="#71717A"
+                fontSize="10"
+                fontFamily="'IBM Plex Mono', monospace"
+                fontWeight="500"
+                letterSpacing="0.04em"
+              >
+                {stage.label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 /* ---------- typewriter ---------- */
 
 function Typewriter({ phrases }) {
@@ -313,6 +482,8 @@ export default function Landing() {
             <p className="landing-subtitle">
               AI finds, matches, and applies to jobs for you — while you focus on interviews.
             </p>
+
+            <PipelineViz />
 
             <div className="landing-typewriter-wrap">
               <Typewriter phrases={TYPEWRITER_PHRASES} />

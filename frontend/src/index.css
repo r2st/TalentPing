@@ -202,6 +202,38 @@
   50% { opacity: 0; }
 }
 
+@keyframes landing-node-appear {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes landing-pipeline-pulse {
+  0%, 100% { stroke: rgba(240, 180, 41, 0.2); }
+  50% { stroke: rgba(240, 180, 41, 0.4); }
+}
+
+/* ── Pipeline Visualization ── */
+.landing-pipeline-wrap {
+  margin: 28px 0 24px;
+  max-width: 500px;
+  overflow: visible;
+}
+
+.landing-pipeline {
+  display: block;
+  overflow: visible;
+}
+
+.landing-pipeline-node {
+  animation: landing-node-appear 0.5s ease both,
+             landing-pipeline-pulse 3s ease-in-out infinite;
+  transition: stroke 0.3s;
+}
+
+.landing-pipeline-node:hover {
+  stroke: rgba(240, 180, 41, 0.5);
+}
+
 /* ── Header ── */
 .landing-header {
   position: relative;
