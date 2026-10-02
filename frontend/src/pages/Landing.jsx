@@ -1,285 +1,66 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import Logo from "../components/ui/Logo";
 
-/* ---------- background visual elements ---------- */
+/* ---------- robot SVGs from DoAide template ---------- */
 
-function FloatingOrbs() {
+function RobotFace({ size = 32, color = "#F0B429" }) {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="orb orb-1" />
-      <div className="orb orb-2" />
-      <div className="orb orb-3" />
-    </div>
-  );
-}
-
-function GridPattern() {
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.025]"
-      aria-hidden="true"
-    >
-      <defs>
-        <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-          <path d="M48 0H0v48" fill="none" stroke="white" strokeWidth="0.4" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width={size} height={size}>
+      <line x1="16" y1="6" x2="16" y2="2" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="16" cy="1.5" r="1.5" fill={color} />
+      <rect x="5" y="6" width="22" height="17" rx="5" fill={color} />
+      <ellipse cx="11" cy="13" rx="2.5" ry="3" fill="#0A0A0B" />
+      <ellipse cx="21" cy="13" rx="2.5" ry="3" fill="#0A0A0B" />
+      <circle cx="11.5" cy="12.5" r="1" fill={color} opacity="0.6" />
+      <circle cx="21.5" cy="12.5" r="1" fill={color} opacity="0.6" />
+      <path d="M12 19Q16 22 20 19" stroke="#0A0A0B" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+      <rect x="1" y="10" width="4" height="5" rx="2" fill={color} opacity="0.8" />
+      <rect x="27" y="10" width="4" height="5" rx="2" fill={color} opacity="0.8" />
     </svg>
   );
 }
 
-function ParticleField() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let frame;
-    let particles = [];
-
-    function resize() {
-      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    }
-
-    function init() {
-      resize();
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
-      particles = Array.from({ length: 40 }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5,
-        alpha: Math.random() * 0.3 + 0.1,
-      }));
-    }
-
-    function draw() {
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
-      ctx.clearRect(0, 0, w, h);
-
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = w;
-        if (p.x > w) p.x = 0;
-        if (p.y < 0) p.y = h;
-        if (p.y > h) p.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(240, 180, 41, ${p.alpha})`;
-        ctx.fill();
-      }
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(240, 180, 41, ${0.06 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
-      frame = requestAnimationFrame(draw);
-    }
-
-    init();
-    draw();
-    window.addEventListener("resize", init);
-    return () => {
-      window.removeEventListener("resize", init);
-      cancelAnimationFrame(frame);
-    };
-  }, []);
-
+function HeroRobot({ color = "#F0B429" }) {
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0 h-full w-full"
-      aria-hidden="true"
-    />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="120" height="100" className="landing-hero-robot">
+      <line x1="60" y1="18" x2="60" y2="6" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="60" cy="4" r="3" fill={color} className="landing-antenna-glow" />
+      <rect x="25" y="18" width="70" height="55" rx="16" fill={color} />
+      <ellipse cx="42" cy="40" rx="8" ry="10" fill="#0A0A0B" />
+      <ellipse cx="78" cy="40" rx="8" ry="10" fill="#0A0A0B" />
+      <circle cx="44" cy="38" r="3" fill={color} opacity="0.5" />
+      <circle cx="80" cy="38" r="3" fill={color} opacity="0.5" />
+      <path d="M45 60 Q60 72 75 60" stroke="#0A0A0B" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <rect x="5" y="30" width="16" height="18" rx="6" fill={color} opacity="0.8" />
+      <rect x="99" y="30" width="16" height="18" rx="6" fill={color} opacity="0.8" />
+    </svg>
   );
 }
 
-/* ---------- animated hero elements ---------- */
+/* ---------- config from product-configs.json ---------- */
 
-function PulsingRing({ delay = 0 }) {
-  return (
-    <div
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-signal/20"
-      style={{
-        width: "180px",
-        height: "180px",
-        animation: `landing-pulse 3.6s cubic-bezier(0, 0, 0.2, 1) infinite`,
-        animationDelay: `${delay}s`,
-      }}
-    />
-  );
-}
-
-function AnimatedLogo() {
-  return (
-    <div className="relative flex items-center justify-center">
-      <PulsingRing delay={0} />
-      <PulsingRing delay={1.2} />
-      <PulsingRing delay={2.4} />
-      <div className="landing-logo-float relative z-10">
-        <Logo className="h-20 w-20 text-signal drop-shadow-[0_0_32px_rgba(240,180,41,0.5)] md:h-24 md:w-24" />
-      </div>
-    </div>
-  );
-}
-
-function TypewriterText({ words, className = "" }) {
-  const [index, setIndex] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    const word = words[index];
-    const speed = deleting ? 35 : 70;
-
-    if (!deleting && displayed === word) {
-      const pause = setTimeout(() => setDeleting(true), 2200);
-      return () => clearTimeout(pause);
-    }
-    if (deleting && displayed === "") {
-      setDeleting(false);
-      setIndex((i) => (i + 1) % words.length);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setDisplayed(
-        deleting ? word.slice(0, displayed.length - 1) : word.slice(0, displayed.length + 1)
-      );
-    }, speed);
-    return () => clearTimeout(timer);
-  }, [displayed, deleting, index, words]);
-
-  return (
-    <span className={className}>
-      {displayed}
-      <span className="animate-pulse text-signal">|</span>
-    </span>
-  );
-}
-
-/* ---------- feature cards ---------- */
+const ACCENT = "#F0B429";
+const ACCENT_DARK = "#D4A017";
 
 const FEATURES = [
-  {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
-        <path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" strokeLinecap="round" />
-        <path d="M11 8v6M8 11h6" strokeLinecap="round" />
-      </svg>
-    ),
-    title: "Smart Job Matching",
-    desc: "AI scans job boards and finds postings that match your skills, experience, and preferences.",
-  },
-  {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
-        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" strokeLinecap="round" />
-        <rect x="9" y="3" width="6" height="4" rx="1" />
-        <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    title: "Auto-Apply",
-    desc: "Automatically fills out and submits applications on your behalf — even complex multi-step forms.",
-  },
-  {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-        <path d="M22 6l-10 7L2 6" strokeLinecap="round" />
-      </svg>
-    ),
-    title: "Email Outreach",
-    desc: "Crafts personalized emails to recruiters and hiring managers, then tracks every reply.",
-  },
-  {
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-5 w-5">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    title: "Pipeline Tracker",
-    desc: "One dashboard for every application — see status, follow-ups, and responses at a glance.",
-  },
+  { icon: "\u{1F3AF}", title: "Smart Matching" },
+  { icon: "⚡",    title: "Auto Apply" },
+  { icon: "\u{1F4E7}", title: "Email Outreach" },
+  { icon: "\u{1F4CA}", title: "Pipeline" },
 ];
 
-function FeatureCard({ icon, title, desc, delay }) {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={`group rounded-xl border border-white/[0.06] bg-ink-800/50 p-5 backdrop-blur-sm transition-all duration-700 hover:border-signal/20 hover:bg-ink-800/80 ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-signal/20 bg-signal/10 text-signal transition-colors group-hover:bg-signal/20">
-        {icon}
-      </div>
-      <h3 className="mb-1.5 text-sm font-medium text-white">{title}</h3>
-      <p className="text-xs leading-relaxed text-white/35">{desc}</p>
-    </div>
-  );
-}
-
-/* ---------- how-it-works steps ---------- */
-
-function StepIndicator({ number, text, delay }) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-
-  return (
-    <div
-      className={`flex items-center gap-3 transition-all duration-700 ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-      }`}
-    >
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-signal/30 bg-signal/10 font-mono text-xs font-medium text-signal">
-        {number}
-      </div>
-      <span className="text-sm text-white/50">{text}</span>
-    </div>
-  );
-}
+const DOAIDE_PRODUCTS = [
+  { name: "Desk",   url: "https://desk.doaide.com" },
+  { name: "Jobs",   url: "https://job.doaide.com" },
+  { name: "409A",   url: "https://409a.doaide.com" },
+  { name: "GST",    url: "https://gst.doaide.com" },
+  { name: "Pulse",  url: "https://pulse.doaide.com" },
+  { name: "Med",    url: "https://med.doaide.com" },
+  { name: "Realty", url: "https://realty.doaide.com" },
+  { name: "Reach",  url: "https://reach.doaide.com" },
+  { name: "Trade",  url: "https://trade.doaide.com" },
+];
 
 /* ---------- auth form ---------- */
 
@@ -309,41 +90,31 @@ function AuthForm() {
   }
 
   return (
-    <div className="w-full">
-      <div className="mb-5 flex gap-1 rounded-lg border border-white/[0.06] bg-ink-900/60 p-1">
+    <div className="landing-auth">
+      <div className="landing-auth-tabs">
         <button
           type="button"
-          className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ${
-            !isSignUp
-              ? "bg-signal text-ink-900 shadow-sm"
-              : "text-white/50 hover:text-white/80"
-          }`}
+          className={`landing-auth-tab ${!isSignUp ? "landing-auth-tab-active" : ""}`}
           onClick={() => { setMode("signin"); setError(null); }}
         >
           Sign In
         </button>
         <button
           type="button"
-          className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ${
-            isSignUp
-              ? "bg-signal text-ink-900 shadow-sm"
-              : "text-white/50 hover:text-white/80"
-          }`}
+          className={`landing-auth-tab ${isSignUp ? "landing-auth-tab-active" : ""}`}
           onClick={() => { setMode("signup"); setError(null); }}
         >
           Sign Up
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-3">
+      <form onSubmit={onSubmit} className="landing-auth-form">
         {isSignUp && (
-          <div className="animate-fade-up">
-            <label className="label" htmlFor="landing-name">
-              Name <span className="normal-case tracking-normal">(optional)</span>
-            </label>
+          <div className="landing-auth-field">
+            <label className="landing-auth-label" htmlFor="landing-name">Name (optional)</label>
             <input
               id="landing-name"
-              className="input"
+              className="landing-auth-input"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Read from your resume if blank"
@@ -352,13 +123,13 @@ function AuthForm() {
           </div>
         )}
 
-        <div>
-          <label className="label" htmlFor="landing-email">Email</label>
+        <div className="landing-auth-field">
+          <label className="landing-auth-label" htmlFor="landing-email">Email</label>
           <input
             id="landing-email"
             type="email"
             required
-            className="input font-mono"
+            className="landing-auth-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
@@ -366,14 +137,14 @@ function AuthForm() {
           />
         </div>
 
-        <div>
-          <label className="label" htmlFor="landing-password">Password</label>
+        <div className="landing-auth-field">
+          <label className="landing-auth-label" htmlFor="landing-password">Password</label>
           <input
             id="landing-password"
             type="password"
             required
             minLength={8}
-            className="input font-mono"
+            className="landing-auth-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder={isSignUp ? "At least 8 characters" : "••••••••"}
@@ -381,21 +152,15 @@ function AuthForm() {
           />
         </div>
 
-        {error && (
-          <p className="rounded-lg border border-bad/25 bg-bad/10 px-3 py-2 text-xs text-bad">
-            {error}
-          </p>
-        )}
+        {error && <p className="landing-auth-error">{error}</p>}
 
-        <button type="submit" className="btn-primary w-full" disabled={busy}>
+        <button type="submit" className="landing-btn-primary landing-btn-lg" style={{ width: "100%" }} disabled={busy}>
           {busy ? "One moment…" : isSignUp ? "Create account" : "Sign in"}
         </button>
       </form>
 
-      <p className="mt-4 text-center text-xs text-white/25">
-        {isSignUp
-          ? "Free to start. No credit card required."
-          : "Welcome back. Your pipeline awaits."}
+      <p className="landing-auth-hint">
+        {isSignUp ? "Free to start. No credit card." : "Welcome back."}
       </p>
     </div>
   );
@@ -405,126 +170,99 @@ function AuthForm() {
 
 export default function Landing() {
   const { user, loading } = useAuth();
-  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const authRef = useRef(null);
 
   useEffect(() => {
-    setMounted(true);
+    requestAnimationFrame(() => setVisible(true));
   }, []);
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="eyebrow animate-pulse">Loading</span>
+      <div className="landing-root" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ color: "#71717A", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.18em" }}>
+          Loading
+        </span>
       </div>
     );
   }
 
   if (user) return <Navigate to="/" replace />;
 
-  return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
-      <FloatingOrbs />
-      <GridPattern />
-      <ParticleField />
+  function scrollToAuth() {
+    authRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
-      {/* Top bar */}
-      <header className="relative z-20 flex items-center justify-between px-6 py-5 md:px-12">
-        <div className="flex items-center gap-3">
-          <Logo className="h-8 w-8 text-signal" />
-          <span className="font-display text-xl tracking-tightest text-white">
-            DoAide<span className="italic text-signal"> AutoApply</span>
+  return (
+    <div className="landing-root" style={{ "--accent": ACCENT, "--accent-dark": ACCENT_DARK }}>
+      {/* Animated background */}
+      <div className="landing-bg">
+        <div className="landing-orb landing-orb-1" />
+        <div className="landing-orb landing-orb-2" />
+        <div className="landing-orb landing-orb-3" />
+      </div>
+
+      {/* Header */}
+      <header className={`landing-header ${visible ? "landing-visible" : ""}`}>
+        <a href="https://doaide.com" className="landing-brand" target="_blank" rel="noopener noreferrer">
+          <RobotFace size={28} color={ACCENT} />
+          <span className="landing-brand-text">
+            Do<em>Aide</em> AutoApply
           </span>
+        </a>
+        <div className="landing-header-actions">
+          <button type="button" className="landing-btn-ghost" onClick={scrollToAuth}>Sign in</button>
+          <button type="button" className="landing-btn-primary" onClick={scrollToAuth}>Get started</button>
         </div>
       </header>
 
-      {/* Hero section */}
-      <section className="relative z-10 flex flex-1 flex-col items-center justify-center gap-14 px-6 pb-8 pt-4 lg:flex-row lg:gap-20 lg:px-20">
-        {/* Left: Hero */}
-        <div
-          className={`flex max-w-lg flex-1 flex-col items-center text-center transition-all duration-700 lg:items-start lg:text-left ${
-            mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          <div className="mb-8">
-            <AnimatedLogo />
-          </div>
-
-          <h1 className="font-display text-4xl leading-[1.05] tracking-tightest text-white md:text-5xl lg:text-[3.5rem]">
-            Your AI{" "}
-            <TypewriterText
-              words={["job hunter", "form filler", "email writer", "reply tracker"]}
-              className="text-signal"
-            />
-          </h1>
-
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/40">
-            AI-powered job application automation. Upload your resume and AutoApply
-            finds matching jobs, fills out applications, writes recruiter emails,
-            and tracks every response — on autopilot.
-          </p>
-
-          <div className="mt-10 space-y-3">
-            <StepIndicator number="1" text="Upload your resume and set preferences" delay={800} />
-            <StepIndicator number="2" text="AI matches jobs and auto-applies for you" delay={1100} />
-            <StepIndicator number="3" text="Track applications and replies in one place" delay={1400} />
-          </div>
+      {/* Hero */}
+      <main className={`landing-hero ${visible ? "landing-visible" : ""}`}>
+        <div className="landing-hero-robot-wrap">
+          <HeroRobot color={ACCENT} />
         </div>
-
-        {/* Right: Auth form */}
-        <div
-          className={`w-full max-w-[380px] flex-shrink-0 transition-all delay-200 duration-700 ${
-            mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          <div className="rounded-2xl border border-white/[0.08] bg-ink-800/70 p-6 shadow-lift backdrop-blur-md md:p-8">
-            <h2 className="mb-1 font-display text-2xl tracking-tightest text-white">
-              Get started
-            </h2>
-            <p className="mb-6 text-sm text-white/30">
-              Your next opportunity is one upload away.
-            </p>
-            <AuthForm />
-          </div>
+        <h1 className="landing-title">Apply to jobs while you sleep.</h1>
+        <div className="landing-cta-group">
+          <button type="button" className="landing-btn-primary landing-btn-lg" onClick={scrollToAuth}>Get started free</button>
+          <button type="button" className="landing-btn-ghost landing-btn-lg" onClick={scrollToAuth}>Sign in</button>
         </div>
+      </main>
+
+      {/* Features */}
+      <section className={`landing-features ${visible ? "landing-visible" : ""}`}>
+        {FEATURES.map((f, i) => (
+          <div
+            key={f.title}
+            className="landing-feature-card"
+            style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+          >
+            <span className="landing-feature-icon">{f.icon}</span>
+            <span className="landing-feature-title">{f.title}</span>
+          </div>
+        ))}
       </section>
 
-      {/* Features section */}
-      <section className="relative z-10 px-6 pb-16 pt-8 lg:px-20">
-        <div className="mx-auto max-w-4xl">
-          <p
-            className={`mb-8 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-white/30 transition-all duration-700 delay-500 ${
-              mounted ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-            }`}
-          >
-            Everything you need to land your next role
-          </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map((f, i) => (
-              <FeatureCard key={f.title} {...f} delay={200 + i * 120} />
-            ))}
-          </div>
-        </div>
+      {/* Auth section */}
+      <section ref={authRef} className={`landing-auth-section ${visible ? "landing-visible" : ""}`}>
+        <AuthForm />
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/[0.06] px-6 pb-6 pt-5 text-center">
-        <div className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em]">
-          <a href="https://desk.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Desk</a>
-          <a href="https://herald.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Herald</a>
-          <a href="https://409.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">409A</a>
-          <span className="text-signal">AutoApply</span>
-          <a href="https://homenex.doaide.com" target="_blank" rel="noopener noreferrer" className="text-white/20 transition-colors hover:text-signal">Realty</a>
+      <footer className="landing-footer">
+        <div className="landing-footer-products">
+          {DOAIDE_PRODUCTS.map((p) => (
+            <a key={p.name} href={p.url} className="landing-footer-link" target="_blank" rel="noopener noreferrer">
+              {p.name}
+            </a>
+          ))}
         </div>
-        <div className="mb-2 flex justify-center gap-x-3 text-xs">
-          <a href="/privacy" className="text-white/20 transition-colors hover:text-white/40">Privacy</a>
-          <span className="text-white/10">·</span>
-          <a href="/terms" className="text-white/20 transition-colors hover:text-white/40">Terms</a>
+        <div className="landing-footer-bottom">
+          <a href="https://doaide.com" className="landing-footer-home" target="_blank" rel="noopener noreferrer">
+            <RobotFace size={16} color={ACCENT} />
+            doaide.com
+          </a>
+          <span className="landing-footer-copy">&copy; {new Date().getFullYear()} DoAide</span>
         </div>
-        <p className="text-xs text-white/20">
-          © {new Date().getFullYear()}{" "}
-          <a href="https://doaide.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/40">DoAide</a>
-          {" "}· AI tools for small businesses
-        </p>
       </footer>
     </div>
   );
