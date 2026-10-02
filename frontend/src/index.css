@@ -240,7 +240,10 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  padding: 24px 40px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 24px;
   opacity: 0;
 }
 
@@ -258,8 +261,9 @@
 }
 
 .landing-brand-text {
-  font-size: 20px;
-  font-weight: 600;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
   letter-spacing: -0.3px;
 }
 
