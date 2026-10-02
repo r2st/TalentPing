@@ -23,31 +23,34 @@ function RobotFace({ size = 32, color = "#F0B429" }) {
 
 function HeroRobot({ color = "#F0B429" }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="120" height="100" className="landing-hero-robot">
-      <line x1="60" y1="18" x2="60" y2="6" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="60" cy="4" r="3" fill={color} className="landing-antenna-glow" />
-      <rect x="25" y="18" width="70" height="55" rx="16" fill={color} />
-      <ellipse cx="42" cy="40" rx="8" ry="10" fill="#0A0A0B" />
-      <ellipse cx="78" cy="40" rx="8" ry="10" fill="#0A0A0B" />
-      <circle cx="44" cy="38" r="3" fill={color} opacity="0.5" />
-      <circle cx="80" cy="38" r="3" fill={color} opacity="0.5" />
-      <path d="M45 60 Q60 72 75 60" stroke="#0A0A0B" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <rect x="5" y="30" width="16" height="18" rx="6" fill={color} opacity="0.8" />
-      <rect x="99" y="30" width="16" height="18" rx="6" fill={color} opacity="0.8" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" width="200" height="180" className="landing-hero-robot">
+      <line x1="100" y1="30" x2="100" y2="10" stroke={color} strokeWidth="3" strokeLinecap="round" />
+      <circle cx="100" cy="7" r="5" fill={color} className="landing-antenna-glow" />
+      <rect x="40" y="30" width="120" height="90" rx="24" fill={color} />
+      <ellipse cx="70" cy="68" rx="14" ry="17" fill="#0A0A0B" />
+      <ellipse cx="130" cy="68" rx="14" ry="17" fill="#0A0A0B" />
+      <circle cx="73" cy="64" r="5" fill={color} opacity="0.5" />
+      <circle cx="133" cy="64" r="5" fill={color} opacity="0.5" />
+      <path d="M75 100 Q100 118 125 100" stroke="#0A0A0B" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+      <rect x="8" y="50" width="26" height="30" rx="10" fill={color} opacity="0.8" />
+      <rect x="166" y="50" width="26" height="30" rx="10" fill={color} opacity="0.8" />
+      <rect x="55" y="125" width="90" height="30" rx="10" fill={color} opacity="0.9" />
+      <rect x="65" y="158" width="12" height="18" rx="5" fill={color} opacity="0.7" />
+      <rect x="123" y="158" width="12" height="18" rx="5" fill={color} opacity="0.7" />
     </svg>
   );
 }
 
-/* ---------- config from product-configs.json ---------- */
+/* ---------- config ---------- */
 
 const ACCENT = "#F0B429";
 const ACCENT_DARK = "#D4A017";
 
-const FEATURES = [
-  { icon: "\u{1F3AF}", title: "Smart Matching" },
-  { icon: "⚡",    title: "Auto Apply" },
-  { icon: "\u{1F4E7}", title: "Email Outreach" },
-  { icon: "\u{1F4CA}", title: "Pipeline" },
+const TYPEWRITER_PHRASES = [
+  "Smart job matching",
+  "Automated applications",
+  "AI resume tailoring",
+  "Interview-ready pipeline",
 ];
 
 const DOAIDE_PRODUCTS = [
@@ -61,6 +64,98 @@ const DOAIDE_PRODUCTS = [
   { name: "Reach",  url: "https://reach.doaide.com" },
   { name: "Trade",  url: "https://trade.doaide.com" },
 ];
+
+/* ---------- particles ---------- */
+
+function Particles() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+    let particles = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2 + 0.5,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.4 + 0.1,
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of particles) {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 180, 41, ${p.opacity})`;
+        ctx.fill();
+      }
+      animId = requestAnimationFrame(draw);
+    }
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="landing-particles" />;
+}
+
+/* ---------- typewriter ---------- */
+
+function Typewriter({ phrases }) {
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const phrase = phrases[phraseIdx];
+    let timeout;
+
+    if (!deleting && charIdx < phrase.length) {
+      timeout = setTimeout(() => setCharIdx(charIdx + 1), 70);
+    } else if (!deleting && charIdx === phrase.length) {
+      timeout = setTimeout(() => setDeleting(true), 2000);
+    } else if (deleting && charIdx > 0) {
+      timeout = setTimeout(() => setCharIdx(charIdx - 1), 40);
+    } else if (deleting && charIdx === 0) {
+      setDeleting(false);
+      setPhraseIdx((phraseIdx + 1) % phrases.length);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [charIdx, deleting, phraseIdx, phrases]);
+
+  return (
+    <span className="landing-typewriter">
+      <span className="landing-typewriter-text">
+        {phrases[phraseIdx].slice(0, charIdx)}
+      </span>
+      <span className="landing-typewriter-cursor" />
+    </span>
+  );
+}
 
 /* ---------- auth form ---------- */
 
@@ -104,7 +199,7 @@ function AuthForm() {
           className={`landing-auth-tab ${isSignUp ? "landing-auth-tab-active" : ""}`}
           onClick={() => { setMode("signup"); setError(null); }}
         >
-          Sign Up
+          Create Account
         </button>
       </div>
 
@@ -154,7 +249,7 @@ function AuthForm() {
 
         {error && <p className="landing-auth-error">{error}</p>}
 
-        <button type="submit" className="landing-btn-primary landing-btn-lg" style={{ width: "100%" }} disabled={busy}>
+        <button type="submit" className="landing-btn-primary landing-btn-form" disabled={busy}>
           {busy ? "One moment…" : isSignUp ? "Create account" : "Sign in"}
         </button>
       </form>
@@ -171,7 +266,6 @@ function AuthForm() {
 export default function Landing() {
   const { user, loading } = useAuth();
   const [visible, setVisible] = useState(false);
-  const authRef = useRef(null);
 
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
@@ -189,63 +283,48 @@ export default function Landing() {
 
   if (user) return <Navigate to="/" replace />;
 
-  function scrollToAuth() {
-    authRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-
   return (
     <div className="landing-root" style={{ "--accent": ACCENT, "--accent-dark": ACCENT_DARK }}>
-      {/* Animated background */}
-      <div className="landing-bg">
-        <div className="landing-orb landing-orb-1" />
-        <div className="landing-orb landing-orb-2" />
-        <div className="landing-orb landing-orb-3" />
-      </div>
+      <Particles />
 
       {/* Header */}
       <header className={`landing-header ${visible ? "landing-visible" : ""}`}>
         <a href="https://doaide.com" className="landing-brand" target="_blank" rel="noopener noreferrer">
           <RobotFace size={28} color={ACCENT} />
           <span className="landing-brand-text">
-            Do<em>Aide</em> AutoApply
+            Do<em>Aide</em>
           </span>
         </a>
-        <div className="landing-header-actions">
-          <button type="button" className="landing-btn-ghost" onClick={scrollToAuth}>Sign in</button>
-          <button type="button" className="landing-btn-primary" onClick={scrollToAuth}>Get started</button>
-        </div>
       </header>
 
-      {/* Hero */}
-      <main className={`landing-hero ${visible ? "landing-visible" : ""}`}>
-        <div className="landing-hero-robot-wrap">
-          <HeroRobot color={ACCENT} />
+      {/* Split layout */}
+      <main className={`landing-split ${visible ? "landing-visible" : ""}`}>
+        {/* Left panel — product info */}
+        <div className="landing-left">
+          <div className="landing-left-content">
+            <div className="landing-hero-robot-wrap">
+              <HeroRobot color={ACCENT} />
+            </div>
+
+            <h1 className="landing-headline">
+              Job applications, <em>automated.</em>
+            </h1>
+
+            <p className="landing-subtitle">
+              AI finds, matches, and applies to jobs for you — while you focus on interviews.
+            </p>
+
+            <div className="landing-typewriter-wrap">
+              <Typewriter phrases={TYPEWRITER_PHRASES} />
+            </div>
+          </div>
         </div>
-        <h1 className="landing-title">Apply to jobs while you sleep.</h1>
-        <div className="landing-cta-group">
-          <button type="button" className="landing-btn-primary landing-btn-lg" onClick={scrollToAuth}>Get started free</button>
-          <button type="button" className="landing-btn-ghost landing-btn-lg" onClick={scrollToAuth}>Sign in</button>
+
+        {/* Right panel — auth */}
+        <div className="landing-right">
+          <AuthForm />
         </div>
       </main>
-
-      {/* Features */}
-      <section className={`landing-features ${visible ? "landing-visible" : ""}`}>
-        {FEATURES.map((f, i) => (
-          <div
-            key={f.title}
-            className="landing-feature-card"
-            style={{ animationDelay: `${0.3 + i * 0.1}s` }}
-          >
-            <span className="landing-feature-icon">{f.icon}</span>
-            <span className="landing-feature-title">{f.title}</span>
-          </div>
-        ))}
-      </section>
-
-      {/* Auth section */}
-      <section ref={authRef} className={`landing-auth-section ${visible ? "landing-visible" : ""}`}>
-        <AuthForm />
-      </section>
 
       {/* Footer */}
       <footer className="landing-footer">

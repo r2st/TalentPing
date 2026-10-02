@@ -21,7 +21,7 @@ function Loading() {
 function Protected({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <Loading />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   return <Shell>{children}</Shell>;
 }
 
@@ -57,7 +57,7 @@ function Home() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Landing />} />
+      <Route path="/login" element={<Navigate to="/" replace />} />
 
       {/* The four destinations in the nav. */}
       <Route
