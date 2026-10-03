@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Allow: /tools/
+Allow: /blog/
+Allow: /embed
 
 Sitemap: https://job.doaide.com/sitemap.xml

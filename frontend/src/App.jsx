@@ -9,6 +9,13 @@ import Landing from "./pages/Landing";
 import Pipeline from "./pages/Pipeline";
 import Setup from "./pages/Setup";
 import Tailor from "./pages/Tailor";
+import ToolsIndex from "./pages/tools/ToolsIndex";
+import ResumeScore from "./pages/tools/ResumeScore";
+import SalaryEstimator from "./pages/tools/SalaryEstimator";
+import CoverLetterGenerator from "./pages/tools/CoverLetterGenerator";
+import Embed from "./pages/Embed";
+import BlogIndex from "./pages/blog/BlogIndex";
+import BlogPost from "./pages/blog/BlogPost";
 
 function Loading() {
   return (
@@ -105,6 +112,15 @@ export default function App() {
       />
 
       <Route path="/" element={<Home />} />
+
+      {/* Public viral pages */}
+      <Route path="/tools" element={<ToolsIndex />} />
+      <Route path="/tools/resume-score" element={<ResumeScore />} />
+      <Route path="/tools/salary-estimator" element={<SalaryEstimator />} />
+      <Route path="/tools/cover-letter-generator" element={<CoverLetterGenerator />} />
+      <Route path="/embed" element={<Embed />} />
+      <Route path="/blog" element={<BlogIndex />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
 
       {/* Old destinations, folded into the four above. */}
       <Route path="/dashboard" element={<Navigate to="/pipeline" replace />} />
