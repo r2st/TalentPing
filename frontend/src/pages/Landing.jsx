@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import DoAideFooter from "../components/DoAideFooter";
 
 /* ---------- robot SVGs from DoAide template ---------- */
 
@@ -496,6 +497,8 @@ export default function Landing() {
           <AuthForm />
         </div>
       </main>
+
+      <DoAideFooter />
 
       {/* Footer */}
       <footer className="landing-footer">
