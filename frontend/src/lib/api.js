@@ -1,15 +1,25 @@
-// API client for the TalentPing backend.
-// Stores the JWT in localStorage and attaches it as a Bearer token.
-
 const BASE = "/api/v1";
-const TOKEN_KEY = "talentping_token";
+const TOKEN_KEY = "autoapply_token";
+const LEGACY_TOKEN_KEY = "talentping_token";
+
+function migrateToken() {
+  const old = localStorage.getItem(LEGACY_TOKEN_KEY);
+  if (old && !localStorage.getItem(TOKEN_KEY)) {
+    localStorage.setItem(TOKEN_KEY, old);
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
+  }
+}
+migrateToken();
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
 export function setToken(token) {
   if (token) localStorage.setItem(TOKEN_KEY, token);
-  else localStorage.removeItem(TOKEN_KEY);
+  else {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
+  }
 }
 
 async function request(path, { method = "GET", body, form, auth = true } = {}) {

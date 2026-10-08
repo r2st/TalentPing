@@ -1010,7 +1010,7 @@ function PushToggle({ status, onChange }) {
  * the clearest of those may be answered without the user reading it.
  *
  * Two switches rather than one, and the inner one is deliberately harder to
- * reach. Everywhere else in TalentPing an AI reply is always reviewed before it
+ * reach. Everywhere else in DoAide AutoApply an AI reply is always reviewed before it
  * goes out; this is the single exception, so it is off by default, it names its
  * own threshold in the copy, and turning inbox watching off disarms it rather
  * than leaving it primed for a switch-on months later.
