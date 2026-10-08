@@ -13,6 +13,7 @@ import ToolsIndex from "./pages/tools/ToolsIndex";
 import ResumeScore from "./pages/tools/ResumeScore";
 import SalaryEstimator from "./pages/tools/SalaryEstimator";
 import CoverLetterGenerator from "./pages/tools/CoverLetterGenerator";
+import AuthCallback from "./pages/AuthCallback";
 import Embed from "./pages/Embed";
 import BlogIndex from "./pages/blog/BlogIndex";
 import BlogPost from "./pages/blog/BlogPost";
@@ -65,6 +66,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
 
       {/* The four destinations in the nav. */}
       <Route

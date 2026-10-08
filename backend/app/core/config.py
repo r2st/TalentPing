@@ -268,6 +268,16 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: str = ""
     google_oauth_redirect_uri: str = "http://localhost:8000/api/v1/gmail/callback"
+
+    # SSO login (separate from Gmail OAuth which is for email sending)
+    sso_google_client_id: str = ""
+    sso_google_client_secret: str = ""
+    github_client_id: str = ""
+    github_client_secret: str = ""
+    microsoft_client_id: str = ""
+    microsoft_client_secret: str = ""
+    oauth_redirect_base: str = "http://localhost:8000"
+    session_secret: str = "change-me-session-secret"
     # Fernet key protecting OAuth tokens at rest. Generate with:
     #   python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
     token_encryption_key: str = ""

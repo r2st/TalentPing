@@ -32,8 +32,11 @@ class User(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
     full_name: Mapped[str | None] = mapped_column(String(200))
-    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    oauth_provider: Mapped[str | None] = mapped_column(String(30))
+    oauth_id: Mapped[str | None] = mapped_column(String(255))
 
     # ``user`` or ``admin``. Deliberately a string rather than a bool, because
     # the question this answers will not stay binary — but deliberately *not* an

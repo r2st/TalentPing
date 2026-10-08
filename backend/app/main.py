@@ -14,6 +14,8 @@ from app.core.config import settings
 from app.core.database import connection_ceiling
 from app.core.errors import ServerErrorEnvelopeMiddleware
 from app.core.logging import RequestContextMiddleware, configure_logging
+from starlette.middleware.sessions import SessionMiddleware
+
 from app.routers import (
     admin,
     analytics,
@@ -32,6 +34,7 @@ from app.routers import (
     linkedin,
     misc,
     notifications,
+    oauth_sso,
     profiles,
     recruiter_inbox,
     recruiters,
@@ -131,6 +134,8 @@ def create_app() -> FastAPI:
     # server error that actually happened.
     app.add_middleware(ServerErrorEnvelopeMiddleware)
 
+    app.add_middleware(SessionMiddleware, secret_key=settings.session_secret)
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -174,6 +179,7 @@ def create_app() -> FastAPI:
     app.include_router(misc.router, prefix=prefix)
     app.include_router(admin.router, prefix=prefix)
     app.include_router(auth.router, prefix=prefix)
+    app.include_router(oauth_sso.router, prefix=prefix)
     app.include_router(gmail.router, prefix=prefix)
     app.include_router(resumes.router, prefix=prefix)
     app.include_router(profiles.router, prefix=prefix)
