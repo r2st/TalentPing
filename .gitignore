@@ -45,3 +45,7 @@ frontend/.vite/
 uploads/
 *.db
 *.sqlite3
+
+# Environment
+.env*
+!.env.example
