@@ -4,7 +4,7 @@
 // otherwise leave a stale count in the header for up to 30 seconds. Pages that
 // change a count fire this; the Shell listens and refetches immediately.
 
-const EVENT = "talentping:counts-changed";
+const EVENT = "doaide:counts-changed";
 
 export function notifyCountsChanged() {
   window.dispatchEvent(new Event(EVENT));

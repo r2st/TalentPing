@@ -178,7 +178,7 @@ def _callback_html(ok: bool, message: str) -> str:
     </p>
     <script>
       (function () {{
-        var payload = {{ source: "talentping-gmail-oauth", status: "{outcome}" }};
+        var payload = {{ source: "doaide-gmail-oauth", status: "{outcome}" }};
         var opener = null;
         try {{ opener = window.opener; }} catch (e) {{}}
         if (opener) {{

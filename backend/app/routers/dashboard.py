@@ -617,7 +617,7 @@ def export_csv(
         buffer.getvalue(),
         media_type="text/csv; charset=utf-8",
         headers={
-            "Content-Disposition": f'attachment; filename="talentping-pipeline-{stamp}.csv"'
+            "Content-Disposition": f'attachment; filename="doaide-autoapply-pipeline-{stamp}.csv"'
         },
     )
 

@@ -184,7 +184,7 @@ class Settings(BaseSettings):
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     openrouter_model: str = "openai/gpt-oss-20b"
     openrouter_classifier_model: str = "openai/gpt-oss-20b"
-    openrouter_app_url: str = "https://talentping.local"
+    openrouter_app_url: str = "https://job.doaide.com"
     openrouter_app_title: str = "DoAide AutoApply"
 
     # ---- AI fallback providers -------------------------------------------

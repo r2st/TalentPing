@@ -132,7 +132,7 @@ async function exportCsv(filters, toast, onError) {
     const href = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
     const link = document.createElement("a");
     link.href = href;
-    link.download = `talentping-pipeline-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `doaide-autoapply-pipeline-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(href);
     toast.success("Downloaded.");

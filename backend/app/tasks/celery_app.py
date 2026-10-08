@@ -42,7 +42,7 @@ from app.services.send_time import MAX_SEND_DELAY_SECONDS
 BROKER_VISIBILITY_TIMEOUT = MAX_SEND_DELAY_SECONDS + 86_400
 
 celery_app = Celery(
-    "talentping",
+    "doaide-autoapply",
     broker=settings.celery_broker_url,
     backend=settings.celery_result_backend,
     include=[

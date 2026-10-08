@@ -807,7 +807,7 @@ function ConnectEmail({ status, onChange, onError }) {
   useEffect(() => {
     function onMessage(event) {
       if (event.origin !== window.location.origin) return;
-      if (event.data?.source !== "talentping-gmail-oauth") return;
+      if (event.data?.source !== "doaide-gmail-oauth") return;
       setBusy(false);
       if (event.data.status === "connected") {
         onChange();
@@ -837,7 +837,7 @@ function ConnectEmail({ status, onChange, onError }) {
       const { authorization_url } = await api.gmailAuthorize();
       popupRef.current = window.open(
         authorization_url,
-        "talentping-gmail",
+        "doaide-gmail",
         "width=520,height=680,noopener=no",
       );
       if (!popupRef.current) {

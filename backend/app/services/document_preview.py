@@ -691,7 +691,7 @@ def pdf_from_legacy_doc(data: bytes) -> bytes | None:
     binary = soffice_path()
     if binary is None:
         return None
-    with tempfile.TemporaryDirectory(prefix="talentping-doc-") as workdir:
+    with tempfile.TemporaryDirectory(prefix="doaide-doc-") as workdir:
         source = os.path.join(workdir, "source.doc")
         with open(source, "wb") as handle:
             handle.write(data)

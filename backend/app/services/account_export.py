@@ -336,14 +336,14 @@ def account_summary(user: User) -> dict[str, Any]:
 
 
 def export_filename(user: User, now: datetime | None = None) -> str:
-    """``talentping-export-2026-08-27.json`` — dated, so two are distinguishable.
+    """``doaide-autoapply-export-2026-08-27.json`` — dated, so two are distinguishable.
 
     Deliberately carries no address or name. The file lands in a downloads
     folder that other people may see over a shoulder or in a shared screen, and
     the account it belongs to is inside it either way.
     """
     stamp = (now or datetime.now(UTC)).date().isoformat()
-    return f"talentping-export-{stamp}.json"
+    return f"doaide-autoapply-export-{stamp}.json"
 
 
 def stream_export(db: Session, user: User) -> Iterator[str]:

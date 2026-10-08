@@ -318,11 +318,11 @@ def _date(value: datetime | None) -> str:
 
 
 def filename(*, now: datetime | None = None) -> str:
-    """``talentping-pipeline-2026-08-23.pdf``.
+    """``doaide-autoapply-pipeline-2026-08-23.pdf``.
 
     Matches the CSV export's naming exactly, minus the extension: the thing
     people do with these is accumulate them in a downloads folder, and two files
     from the same day about the same pipeline should sort together.
     """
     stamp = (now or datetime.now(UTC)).date().isoformat()
-    return f"talentping-pipeline-{stamp}.pdf"
+    return f"doaide-autoapply-pipeline-{stamp}.pdf"
