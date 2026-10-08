@@ -87,10 +87,12 @@ _callback_limit = ip_rate_limit(30, 300, scope="gmail-oauth-callback")
 # See docs/GOOGLE-OAUTH-SETUP.md § "This app is blocked" for the fix.
 _OAUTH_ERROR_HELP = {
     "access_denied": (
-        "Google blocked the connection. Either you dismissed the consent screen, "
-        "or this address isn't on the OAuth client's test-user list — while the "
-        "app is in Testing, only listed addresses may connect. Ask the "
-        "administrator to publish the app or add you as a test user."
+        "Google blocked the connection. This usually means the consent screen "
+        "was dismissed, or the app hasn't completed Google's OAuth verification "
+        "for the Gmail permissions it needs. If the app is still in Testing mode, "
+        "only addresses on the test-user list may connect. Ask the administrator "
+        "to add your Google account as a test user in the Google Cloud Console, "
+        "or to complete the OAuth verification process."
     ),
     "admin_policy_enforced": (
         "Your Google Workspace administrator blocks third-party apps from "

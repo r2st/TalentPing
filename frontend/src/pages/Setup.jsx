@@ -875,11 +875,11 @@ function ConnectEmail({ status, onChange, onError }) {
       <div className="space-y-4">
         <DisconnectRow address={status.gmail_address} onDisconnect={disconnect} />
         <div>
-          <button className="btn-quiet" onClick={connect} disabled={busy}>
+          <button className="btn-ghost" onClick={connect} disabled={busy}>
             <GoogleGlyph />
             {busy ? "Waiting for Google…" : "Add another mailbox"}
           </button>
-          <p className="mt-1.5 text-xs text-white/30">
+          <p className="mt-1.5 text-xs text-white/40">
             Adding a mailbox gives you a second identity, not a higher send
             limit — each warms up on its own.
           </p>
